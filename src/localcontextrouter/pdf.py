@@ -7,6 +7,7 @@ package.
 
 from __future__ import annotations
 
+import io
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -47,6 +48,22 @@ class Pdf:
         """Yield the embedded text of every page in order."""
         for index in range(len(self)):
             yield self.page_text(index)
+
+    def render_page_png(self, index: int, scale: float = 2.0) -> bytes:
+        """Render the page at ``index`` to PNG bytes.
+
+        ``scale`` multiplies the native size (2.0 ~= 144 DPI), trading speed for
+        OCR accuracy on small text. Used to feed image-only pages to OCR.
+        """
+        page = self._doc[index]
+        bitmap = page.render(scale=scale)
+        try:
+            buffer = io.BytesIO()
+            bitmap.to_pil().save(buffer, format="PNG")
+            return buffer.getvalue()
+        finally:
+            bitmap.close()
+            page.close()
 
     def close(self) -> None:
         self._doc.close()
