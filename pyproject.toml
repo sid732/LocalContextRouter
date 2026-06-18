@@ -21,7 +21,9 @@ classifiers = [
     "Topic :: Text Processing",
 ]
 dynamic = ["version"]
-dependencies = []
+dependencies = [
+    "pypdfium2>=4.30",
+]
 
 [project.urls]
 Homepage = "https://github.com/sid732/LocalContextRouter"
@@ -33,6 +35,7 @@ dev = [
     "pytest-cov>=5.0",
     "ruff>=0.6",
     "mypy>=1.11",
+    "fpdf2>=2.7",
 ]
 
 [tool.hatch.version]
@@ -53,6 +56,10 @@ select = ["E", "F", "I", "UP", "B", "SIM", "C4"]
 python_version = "3.10"
 strict = true
 files = ["src"]
+
+[[tool.mypy.overrides]]
+module = ["pypdfium2.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
