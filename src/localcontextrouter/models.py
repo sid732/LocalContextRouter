@@ -43,3 +43,54 @@ class Classification:
     page_class: PageClass
     signals: PageSignals
     reason: str
+
+
+@dataclass(frozen=True)
+class BoundingBox:
+    """A normalized box with a top-left origin; all values are fractions in 0...1."""
+
+    x: float
+    y: float
+    width: float
+    height: float
+
+
+@dataclass(frozen=True)
+class OcrLine:
+    """A single line recognized by the OCR binary."""
+
+    text: str
+    confidence: float
+    bounding_box: BoundingBox
+
+
+class Source(str, Enum):
+    """Where a page's final text came from."""
+
+    TEXT = "text"
+    """Extracted directly from the embedded text layer."""
+
+    OCR = "ocr"
+    """Produced by on-device OCR after rendering the page."""
+
+
+@dataclass(frozen=True)
+class PageRoute:
+    """The routing outcome for one page: its classification, source, and text."""
+
+    index: int
+    classification: Classification
+    source: Source
+    text: str
+
+
+@dataclass(frozen=True)
+class RouteResult:
+    """The routing outcome for a whole document."""
+
+    pages: list[PageRoute]
+
+    @property
+    def text(self) -> str:
+        """All page text joined in reading order."""
+        return "\n\n".join(page.text for page in self.pages)
