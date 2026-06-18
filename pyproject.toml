@@ -23,6 +23,7 @@ classifiers = [
 dynamic = ["version"]
 dependencies = [
     "pypdfium2>=4.30",
+    "pillow>=10.1",
 ]
 
 [project.urls]
@@ -64,3 +65,6 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+markers = [
+    "integration: tests that invoke the built lcr-ocr binary",
+]
