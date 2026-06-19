@@ -65,7 +65,7 @@ class OcrLine:
 
 
 class Source(str, Enum):
-    """Where a page's final text came from."""
+    """Where a page's final content should come from."""
 
     TEXT = "text"
     """Extracted directly from the embedded text layer."""
@@ -73,15 +73,55 @@ class Source(str, Enum):
     OCR = "ocr"
     """Produced by on-device OCR after rendering the page."""
 
+    VISION = "vision"
+    """Send the page to a vision model — its meaning lives in the visuals."""
+
+
+@dataclass(frozen=True)
+class PageFeatures:
+    """Layout signals for a page, derived from its content objects."""
+
+    width: float
+    """Page width in PDF points."""
+
+    height: float
+    """Page height in PDF points."""
+
+    image_count: int
+    """Number of raster image objects on the page."""
+
+    image_coverage: float
+    """Fraction of the page area covered by raster images, in 0...1."""
+
+    path_count: int
+    """Number of vector path objects (lines, curves, fills)."""
+
+    path_coverage: float
+    """Fraction of the page area covered by vector paths, in 0...1."""
+
+
+@dataclass(frozen=True)
+class TokenEstimate:
+    """Estimated token cost of a page as extracted text versus as an image."""
+
+    text_tokens: int
+    image_tokens: int
+
+    @property
+    def saved(self) -> int:
+        """Tokens avoided by sending text instead of the page image (never negative)."""
+        return max(0, self.image_tokens - self.text_tokens)
+
 
 @dataclass(frozen=True)
 class PageRoute:
-    """The routing outcome for one page: its classification, source, and text."""
+    """The routing outcome for one page."""
 
     index: int
     classification: Classification
     source: Source
     text: str
+    tokens: TokenEstimate
 
 
 @dataclass(frozen=True)
@@ -94,3 +134,12 @@ class RouteResult:
     def text(self) -> str:
         """All page text joined in reading order."""
         return "\n\n".join(page.text for page in self.pages)
+
+    @property
+    def tokens_saved(self) -> int:
+        """Total tokens avoided versus sending every page as an image.
+
+        Counts only pages routed to text or OCR; vision pages are sent as
+        images, so they save nothing.
+        """
+        return sum(page.tokens.saved for page in self.pages if page.source is not Source.VISION)
