@@ -12,9 +12,10 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import pypdfium2 as pdfium
+import pypdfium2.raw as pdfium_c
 
 from .classify import classify_text
-from .models import Classification
+from .models import Classification, PageFeatures
 
 
 class Pdf:
@@ -48,6 +49,39 @@ class Pdf:
         """Yield the embedded text of every page in order."""
         for index in range(len(self)):
             yield self.page_text(index)
+
+    def page_features(self, index: int) -> PageFeatures:
+        """Summarize the page's image and vector-path content for routing.
+
+        Counts raster image and vector path objects and the fraction of the page
+        each covers. Charts and diagrams emit many vector paths rather than raster
+        images, so the path signals catch content that an image count misses.
+        """
+        page = self._doc[index]
+        try:
+            width, height = page.get_size()
+            page_area = width * height
+            image_count = path_count = 0
+            image_area = path_area = 0.0
+            for obj in page.get_objects():
+                left, bottom, right, top = obj.get_bounds()
+                area = abs((right - left) * (top - bottom))
+                if obj.type == pdfium_c.FPDF_PAGEOBJ_IMAGE:
+                    image_count += 1
+                    image_area += area
+                elif obj.type == pdfium_c.FPDF_PAGEOBJ_PATH:
+                    path_count += 1
+                    path_area += area
+            return PageFeatures(
+                width=width,
+                height=height,
+                image_count=image_count,
+                image_coverage=image_area / page_area if page_area else 0.0,
+                path_count=path_count,
+                path_coverage=path_area / page_area if page_area else 0.0,
+            )
+        finally:
+            page.close()
 
     def render_page_png(self, index: int, scale: float = 2.0) -> bytes:
         """Render the page at ``index`` to PNG bytes.
