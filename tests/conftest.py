@@ -37,6 +37,31 @@ def make_text_pdf(tmp_path: Path) -> Callable[..., Path]:
 
 
 @pytest.fixture
+def make_table_pdf(tmp_path: Path) -> Callable[..., Path]:
+    """Return a factory for a page with a real text layer and a ruled table.
+
+    The body text keeps the page ``DIGITAL`` while the many ruling lines make it
+    vision-worthy.
+    """
+
+    def _make(rows: int = 20, cols: int = 6, name: str = "table.pdf") -> Path:
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Helvetica", size=10)
+        pdf.multi_cell(0, 6, "Financial summary table with quarterly figures follows. " * 2)
+        top = 60
+        for i in range(rows + 1):
+            pdf.line(10, top + i * 8, 200, top + i * 8)
+        for j in range(cols + 1):
+            pdf.line(10 + j * 30, top, 10 + j * 30, top + rows * 8)
+        path = tmp_path / name
+        pdf.output(str(path))
+        return path
+
+    return _make
+
+
+@pytest.fixture
 def make_image_pdf(tmp_path: Path) -> Callable[..., Path]:
     """Return a factory that writes an image-only PDF (no text layer)."""
 
