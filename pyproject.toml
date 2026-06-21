@@ -11,7 +11,7 @@ license = "MIT"
 authors = [{ name = "Siddharth Nashikkar" }]
 keywords = ["llm", "ocr", "pdf", "vision", "tokens", "preprocessing"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: MacOS",
@@ -25,6 +25,9 @@ dependencies = [
     "pypdfium2>=4.30",
     "pillow>=10.1",
 ]
+
+[project.scripts]
+localctx = "localcontextrouter.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/sid732/LocalContextRouter"
