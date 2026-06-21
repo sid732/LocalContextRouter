@@ -23,7 +23,7 @@ from .tokens import (
     openai_image_tokens,
 )
 
-__version__ = "0.0.0"
+__version__ = "0.1.0"
 
 __all__ = [
     "BoundingBox",
