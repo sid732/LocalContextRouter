@@ -26,6 +26,9 @@ ocr/.swiftpm/
 *.xcodeproj/
 .DS_Store
 
+# OCR binary compiled into the wheel by the build hook
+src/localcontextrouter/_bin/
+
 # Editors
 .idea/
 .vscode/
