@@ -6,7 +6,9 @@ from pathlib import Path
 import pytest
 
 from localcontextrouter.models import Source
+from localcontextrouter.pdf import Pdf
 from localcontextrouter.router import route_pdf
+from localcontextrouter.text import clean_text
 
 PROSE = (
     "The quarterly report summarizes revenue, expenses, and net income for the "
@@ -29,6 +31,16 @@ def test_text_page_reports_token_savings(make_text_pdf: Callable[..., Path]) -> 
     # A short prose page is far cheaper as text than as a full-page image.
     assert page.tokens.image_tokens > page.tokens.text_tokens
     assert result.tokens_saved == page.tokens.saved > 0
+
+
+def test_output_text_is_cleaned(make_text_pdf: Callable[..., Path]) -> None:
+    pdf_path = make_text_pdf(PROSE)
+    result = route_pdf(pdf_path)
+    with Pdf(pdf_path) as pdf:
+        raw = pdf.page_text(0)
+    # The router emits cleaned text; classification still runs on the raw layer.
+    assert result.pages[0].text == clean_text(raw)
+    assert "\r" not in result.pages[0].text
 
 
 def test_routes_table_page_to_vision(make_table_pdf: Callable[..., Path]) -> None:
