@@ -7,13 +7,13 @@ on:
 jobs:
   build:
     name: Build distributions
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Build sdist and wheel
+      - name: Build sdist and universal2 wheel
         run: |
           python -m pip install --upgrade build
           python -m build
@@ -21,6 +21,16 @@ jobs:
         run: |
           python -m pip install --upgrade twine
           twine check dist/*
+      - name: Verify the wheel bundles the OCR binary
+        run: |
+          python - <<'PY'
+          import glob, zipfile
+          wheel = glob.glob("dist/*.whl")[0]
+          assert wheel.endswith("macosx_11_0_universal2.whl"), wheel
+          names = zipfile.ZipFile(wheel).namelist()
+          assert "localcontextrouter/_bin/lcr-ocr" in names, names
+          print("ok:", wheel)
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: dist
