@@ -33,8 +33,8 @@ Route the document and read the JSON, rendering any visual pages into a folder:
 localctx <path-to-document> --json --vision-dir ./lcr-pages
 ```
 
-If `localctx` is not on the PATH, run the bundled script by its path inside this
-skill folder instead:
+If the `localctx` command is not available, run the bundled script with a Python
+that has `localcontextrouter` installed (the script imports the same package):
 
 ```sh
 python scripts/preflight.py <path-to-document> --json --vision-dir ./lcr-pages
