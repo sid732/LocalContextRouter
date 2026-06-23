@@ -45,6 +45,16 @@ def test_locate_binary_prefers_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
     assert locate_binary() == fake
 
 
+def test_locate_binary_uses_bundled_copy(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from localcontextrouter import ocr
+
+    bundled = tmp_path / "lcr-ocr"
+    bundled.write_text("#!/bin/sh\n")
+    monkeypatch.delenv(BINARY_ENV_VAR, raising=False)
+    monkeypatch.setattr(ocr, "_BUNDLED_BINARY", bundled)
+    assert locate_binary() == bundled
+
+
 @pytest.mark.integration
 def test_run_ocr_reads_text(lcr_binary: Path, tmp_path: Path) -> None:
     image = Image.new("RGB", (700, 180), "white")
