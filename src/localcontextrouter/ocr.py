@@ -6,6 +6,7 @@ it, invokes it, and parses its JSON output into :class:`~.models.OcrLine`.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import shutil
@@ -19,6 +20,8 @@ from .models import BoundingBox, OcrLine
 BINARY_ENV_VAR = "LCR_OCR_BIN"
 
 _BINARY_NAME = "lcr-ocr"
+# Shipped in the wheel by the build hook.
+_BUNDLED_BINARY = Path(__file__).resolve().parent / "_bin" / _BINARY_NAME
 # Dev fallback: the binary built from the bundled Swift package in this repo.
 _DEV_BINARY = Path(__file__).resolve().parents[2] / "ocr" / ".build" / "release" / _BINARY_NAME
 
@@ -31,25 +34,36 @@ class OcrError(RuntimeError):
     """Raised when the ``lcr-ocr`` binary exits with an error."""
 
 
+def _executable(path: Path) -> Path:
+    """Return ``path``, making it executable if installation dropped the bit."""
+    if not os.access(path, os.X_OK):
+        with contextlib.suppress(OSError):
+            path.chmod(path.stat().st_mode | 0o111)
+    return path
+
+
 def locate_binary() -> Path:
     """Locate the ``lcr-ocr`` binary.
 
-    Resolution order: the ``LCR_OCR_BIN`` environment variable, then ``PATH``,
-    then the binary built from the bundled Swift package.
+    Resolution order: the ``LCR_OCR_BIN`` environment variable, the copy bundled
+    in the installed wheel, then ``PATH``, then the in-repo dev build.
     """
     override = os.environ.get(BINARY_ENV_VAR)
     if override:
         path = Path(override)
         if not path.exists():
             raise OcrBinaryNotFound(f"{BINARY_ENV_VAR} points to a missing file: {path}")
-        return path
+        return _executable(path)
+
+    if _BUNDLED_BINARY.is_file():
+        return _executable(_BUNDLED_BINARY)
 
     on_path = shutil.which(_BINARY_NAME)
     if on_path:
         return Path(on_path)
 
     if _DEV_BINARY.exists():
-        return _DEV_BINARY
+        return _executable(_DEV_BINARY)
 
     raise OcrBinaryNotFound(
         f"could not find '{_BINARY_NAME}'. Build it with 'swift build -c release' in "
