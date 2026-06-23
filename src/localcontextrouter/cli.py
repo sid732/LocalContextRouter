@@ -1,4 +1,4 @@
-"""``localctx`` — route a document and report the cheapest faithful source per page."""
+"""``localctx``, route a document and report the cheapest faithful source per page."""
 
 from __future__ import annotations
 

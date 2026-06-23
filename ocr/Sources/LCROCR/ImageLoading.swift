@@ -20,7 +20,7 @@ public enum ImageLoadError: Error, CustomStringConvertible {
 /// Loads bitmaps from disk into `CGImage` using ImageIO.
 ///
 /// ImageIO is used instead of AppKit so the binary runs headless (no window
-/// server) — important for CI and for invocation from a CLI.
+/// server), important for CI and for invocation from a CLI.
 public enum ImageLoader {
     /// Decode the first image in the file at `path`.
     public static func loadCGImage(atPath path: String) throws -> CGImage {

@@ -1,7 +1,7 @@
 """Route each PDF page to the cheapest faithful source: text, OCR, or vision.
 
 - Digital pages keep their extracted text, unless their meaning lives in visuals
-  (tables, charts, diagrams) — those go to a vision model.
+  (tables, charts, diagrams), those go to a vision model.
 - Scanned or garbled pages are rendered and sent to OCR.
 
 Every page carries a token estimate so the savings of avoiding the image path

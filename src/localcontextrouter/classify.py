@@ -5,7 +5,7 @@ whether the text layer is usable (:class:`PageClass.DIGITAL`), effectively
 absent (:class:`PageClass.SCANNED`), or present but broken
 (:class:`PageClass.GARBLED`). The two latter cases route to OCR downstream.
 
-Thresholds are deliberately conservative — when in doubt the page is sent to
+Thresholds are deliberately conservative, when in doubt the page is sent to
 OCR, since a wrong "digital" verdict silently feeds garbage to the model.
 """
 
