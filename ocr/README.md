@@ -1,7 +1,7 @@
 # lcr-ocr
 
 On-device OCR binary used by LocalContextRouter. Wraps the Apple Vision
-framework — fully offline, no network, no entitlements, and no Screen Recording
+framework, fully offline, no network, no entitlements, and no Screen Recording
 permission (it reads image files you pass in, it does not capture the screen).
 
 ## Build
@@ -59,9 +59,9 @@ Follows the `sysexits.h` convention so callers can branch on failure mode:
 
 ## Layout
 
-- `Sources/LCROCR` — reusable library: image loading, the Vision engine, and the result models.
-- `Sources/lcr-ocr` — thin CLI over the library.
-- `Tests/LCROCRTests` — engine tests that render text in-process (no binary fixtures).
+- `Sources/LCROCR`, reusable library: image loading, the Vision engine, and the result models.
+- `Sources/lcr-ocr`, thin CLI over the library.
+- `Tests/LCROCRTests`, engine tests that render text in-process (no binary fixtures).
 
 ## Requirements
 

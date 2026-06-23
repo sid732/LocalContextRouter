@@ -120,7 +120,7 @@ def ocr_png_text(
 ) -> str:
     """OCR a PNG given as bytes; return the recognized lines joined by newlines.
 
-    Lines below ``min_confidence`` are dropped — useful for filtering the
+    Lines below ``min_confidence`` are dropped, useful for filtering the
     low-confidence glyphs that icons and logos tend to produce.
     """
     with tempfile.NamedTemporaryFile(suffix=".png") as tmp:

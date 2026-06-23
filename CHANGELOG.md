@@ -21,15 +21,17 @@ First release.
   estimate, following each provider's documented tokenization.
 - `route_pdf`, which routes each page to text, OCR, or vision and reports the
   tokens saved versus sending every page as an image.
-- Routed text is normalized — stray control characters (e.g. PDF discretionary
-  hyphens) are stripped and line endings collapsed — while classification still
+- Routed text is normalized: stray control characters (such as PDF discretionary
+  hyphens) are stripped and line endings collapsed, while classification still
   runs on the raw text layer.
 - `localctx` command-line interface.
 - A `local-context-router` Agent Skill for Claude Code and Codex.
 
 ### Notes
 
-- macOS only; OCR uses the Apple Vision framework.
+- macOS only; OCR uses the Apple Vision framework and needs a normal macOS
+  graphics environment, so it will not run inside a headless sandbox that lacks
+  one.
 - The macOS wheel is a `universal2` platform wheel that bundles the `lcr-ocr`
   binary, so OCR works out of the box. `LCR_OCR_BIN` overrides the bundled copy.
 

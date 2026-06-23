@@ -38,5 +38,5 @@ src/localcontextrouter/_bin/
 /tmp/
 *.log
 
-# Claude Code local (user-specific) settings
+# Local agent settings (user-specific)
 .claude/settings.local.json

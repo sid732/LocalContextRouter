@@ -3,7 +3,7 @@
 Some pages carry a perfectly good text layer yet still lose their meaning when
 flattened to text: tables, charts, diagrams, and figure-heavy layouts. Those are
 worth the vision-token cost. This module decides that from cheap layout features
-(:class:`~.models.PageFeatures`) — no rendering and no ML.
+(:class:`~.models.PageFeatures`), no rendering and no ML.
 """
 
 from __future__ import annotations

@@ -1,28 +1,31 @@
 # LocalContextRouter
 
-> Stop paying the vision-token tax. Decide locally — text, OCR, or vision — *before* a document ever reaches a multimodal LLM.
+Decide locally how each page of a document should reach a multimodal model:
+as extracted text, on-device OCR, or a rendered image. That keeps you from
+paying for vision tokens on pages that are only text.
 
-LocalContextRouter is a **preflight layer** for document-heavy LLM workflows. Given a
-PDF or image, it inspects the content on your machine and decides the cheapest path
-that still preserves accuracy:
+A multimodal model reads a PDF by pulling its text *and* rendering every page to
+an image, then billing for both. On a text page that image runs roughly
+1,300 to 4,800 tokens while the same page as plain text is 400 to 800. For a
+text-dominant document that is several times the cost for nothing extra.
+LocalContextRouter does the cheap work on your machine first and tells you what
+each page actually needs.
 
-- **Text-layer PDF** → extract text locally (near-free).
-- **Scanned / image-only page** → OCR on-device with Apple Vision.
-- **Chart / table / diagram / layout-heavy page** → keep the page as an image for the vision model, where the pixels actually carry meaning.
+It does not call a model. It returns a per-page decision and the text to send;
+your application still makes the call.
 
-It never calls an LLM itself. It prepares the cheapest faithful context and hands you
-back a routing decision plus a token-savings estimate. Your application still owns the
-model call.
+## How it decides
 
-## Why
+For each page:
 
-Multimodal models read a PDF by extracting its text *and* rendering every page to an
-image, then billing for both. A text-heavy page sent as an image can cost
-**1,300–4,800 tokens**; the same page as extracted text costs **400–800**. For
-text-dominant documents that is a 2–10× tax for zero added signal.
+- A usable text layer that is mostly prose: use the extracted text.
+- A text layer dominated by a table, chart, or diagram: send the page as an
+  image, where the layout carries the meaning.
+- No usable text, such as a scan or a photo: recognize it on-device with
+  Apple's Vision framework.
 
-LocalContextRouter spends cheap local compute to avoid that tax — and only escalates
-to vision when the page genuinely needs it.
+The result also reports how many tokens you saved against sending every page as
+an image.
 
 ## Install
 
@@ -30,48 +33,79 @@ to vision when the page genuinely needs it.
 pip install localcontextrouter
 ```
 
-The macOS wheel bundles the on-device OCR binary (`lcr-ocr`, a universal2 build),
-so OCR works out of the box — no extra setup. To override it (e.g. a locally built
-binary), set `LCR_OCR_BIN` to its path.
+macOS only. The wheel bundles a universal (Apple Silicon and Intel) OCR binary,
+so text recognition works with no extra setup.
 
-## Use
-
-There is no server and no background process — everything runs on demand and exits.
-
-### Command line
+## Command line
 
 ```sh
-localctx report.pdf                       # human summary + tokens saved
-localctx report.pdf --json                # machine-readable
-localctx report.pdf --vision-dir ./out    # render visual pages to ./out
+localctx invoice.pdf
+localctx invoice.pdf --json
+localctx scan.png
 ```
 
-### Library
+`localctx invoice.pdf` prints each page, the source chosen for it, and the
+tokens saved:
+
+```
+Document: invoice.pdf (3 pages)
+Tokens saved vs sending every page as an image: 3085
+
+Page 1 [text]
+ACME Corp, Invoice #4471 ...
+
+Page 2 [vision]
+Quarterly results by segment ...
+
+Page 3 [ocr]
+SCANNED RECEIPT TOTAL 42.00
+```
+
+Add `--vision-dir DIR` to render the pages that should go to the model as images
+into `DIR`; their paths are then listed in the output and the JSON.
+
+## In code
 
 ```python
 from localcontextrouter import route_pdf, Source
 
-result = route_pdf("report.pdf")
+result = route_pdf("invoice.pdf")
 for page in result.pages:
     if page.source is Source.VISION:
-        ...  # send the rendered page image to the model
+        send_image(page.index)     # the page's meaning is visual
     else:
-        ...  # use page.text (extracted or OCR'd)
+        send_text(page.text)       # extracted or recognized text
 
-print(result.text)          # all text-routable pages joined
-print(result.tokens_saved)  # tokens avoided vs sending every page as an image
+print(result.tokens_saved)
 ```
 
-### Agent Skill
+Every page also carries an estimate of its cost both ways, as
+`page.tokens.text_tokens` and `page.tokens.image_tokens`.
 
-The `local-context-router` skill (in `.claude/skills/`) runs the same preflight
-inside Claude Code or Codex — copy it into your `.claude/skills/` (or `~/.claude/skills/`).
+## As an agent skill
 
-## Requirements
+`local-context-router` is an Agent Skill in the open `SKILL.md` format, so it
+works in Claude Code and other compatible agents. It lives in this repository
+under `.claude/skills/local-context-router`; copy that folder into your agent's
+skills directory:
 
-- macOS 10.15+ (on-device OCR uses the Apple Vision framework)
-- Python 3.10+
+```sh
+cp -r .claude/skills/local-context-router ~/.claude/skills/
+```
+
+With the package installed, the agent runs the preflight on any PDF or image you
+share, then uses the text for the cheap pages and attaches images only for the
+visual ones.
+
+## Requirements and scope
+
+- macOS 11 or newer. Recognition uses the Apple Vision framework and needs a
+  normal macOS graphics environment; it will not run inside a headless sandbox
+  that lacks one.
+- Python 3.10 or newer.
+- The scope is per-page routing, on-device OCR, and a token estimate. Retrieval
+  over very large documents is out of scope.
 
 ## License
 
-[MIT](LICENSE) © 2026 Siddharth Nashikkar
+MIT. See [LICENSE](LICENSE).

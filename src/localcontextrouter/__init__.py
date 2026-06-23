@@ -1,4 +1,4 @@
-"""LocalContextRouter — cheapest faithful path for documents bound for a multimodal LLM."""
+"""LocalContextRouter, cheapest faithful path for documents bound for a multimodal LLM."""
 
 from .classify import classify_text, compute_signals
 from .detect import is_vision_worthy

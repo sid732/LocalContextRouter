@@ -1,6 +1,6 @@
 """Text normalization for routed output.
 
-Applied to the text a page contributes to the model — not before
+Applied to the text a page contributes to the model, not before
 classification, which relies on seeing control and replacement characters to
 spot a broken text layer.
 """

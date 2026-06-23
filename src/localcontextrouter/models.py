@@ -10,13 +10,13 @@ class PageClass(str, Enum):
     """How a PDF page should be sourced before it reaches an LLM."""
 
     DIGITAL = "digital"
-    """A usable embedded text layer is present — extract the text directly."""
+    """A usable embedded text layer is present, extract the text directly."""
 
     SCANNED = "scanned"
-    """Little or no text layer — the page is image-only and needs OCR."""
+    """Little or no text layer, the page is image-only and needs OCR."""
 
     GARBLED = "garbled"
-    """A text layer exists but is broken (unmapped glyphs) — OCR is safer."""
+    """A text layer exists but is broken (unmapped glyphs), OCR is safer."""
 
 
 @dataclass(frozen=True)
@@ -74,7 +74,7 @@ class Source(str, Enum):
     """Produced by on-device OCR after rendering the page."""
 
     VISION = "vision"
-    """Send the page to a vision model — its meaning lives in the visuals."""
+    """Send the page to a vision model, its meaning lives in the visuals."""
 
 
 @dataclass(frozen=True)

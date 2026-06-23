@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "localcontextrouter"
-description = "Preflight router that picks the cheapest faithful path — text, OCR, or vision — before a document reaches a multimodal LLM."
+description = "Preflight router that picks the cheapest faithful path (text, OCR, or vision) before a document reaches a multimodal LLM."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
