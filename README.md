@@ -30,14 +30,9 @@ to vision when the page genuinely needs it.
 pip install localcontextrouter
 ```
 
-OCR uses an on-device Swift binary (`lcr-ocr`). Build it from the bundled package
-and point the library at it (text extraction, classification, and token estimation
-work without it; only pages that need OCR require it):
-
-```sh
-swift build -c release --package-path ocr
-export LCR_OCR_BIN="$PWD/ocr/.build/release/lcr-ocr"
-```
+The macOS wheel bundles the on-device OCR binary (`lcr-ocr`, a universal2 build),
+so OCR works out of the box — no extra setup. To override it (e.g. a locally built
+binary), set `LCR_OCR_BIN` to its path.
 
 ## Use
 
