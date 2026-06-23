@@ -21,6 +21,9 @@ First release.
   estimate, following each provider's documented tokenization.
 - `route_pdf`, which routes each page to text, OCR, or vision and reports the
   tokens saved versus sending every page as an image.
+- Routed text is normalized — stray control characters (e.g. PDF discretionary
+  hyphens) are stripped and line endings collapsed — while classification still
+  runs on the raw text layer.
 - `localctx` command-line interface.
 - A `local-context-router` Agent Skill for Claude Code and Codex.
 

@@ -17,6 +17,7 @@ from .detect import is_vision_worthy
 from .models import PageClass, PageRoute, RouteResult, Source, TokenEstimate
 from .ocr import ocr_png_text
 from .pdf import Pdf
+from .text import clean_text
 from .tokens import claude_image_tokens, estimate_text_tokens
 
 
@@ -31,10 +32,10 @@ def route_pdf(path: str | Path, *, render_scale: float = 2.0) -> RouteResult:
 
             if classification.page_class is PageClass.DIGITAL:
                 source = Source.VISION if is_vision_worthy(features)[0] else Source.TEXT
-                page_text = text
+                page_text = clean_text(text)
             else:
                 source = Source.OCR
-                page_text = ocr_png_text(pdf.render_page_png(index, scale=render_scale))
+                page_text = clean_text(ocr_png_text(pdf.render_page_png(index, scale=render_scale)))
 
             # text_tokens reflects the text we would actually send (OCR output for
             # scanned pages), so the reported savings are honest.

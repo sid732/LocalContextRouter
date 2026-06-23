@@ -17,6 +17,7 @@ from .models import (
 from .ocr import ocr_png_text, run_ocr
 from .pdf import Pdf, classify_pdf
 from .router import route_pdf
+from .text import clean_text
 from .tokens import (
     claude_image_tokens,
     estimate_text_tokens,
@@ -40,6 +41,7 @@ __all__ = [
     "claude_image_tokens",
     "classify_pdf",
     "classify_text",
+    "clean_text",
     "compute_signals",
     "estimate_text_tokens",
     "is_vision_worthy",
