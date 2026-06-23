@@ -24,6 +24,10 @@ class CustomBuildHook(BuildHookInterface):
     def initialize(self, version: str, build_data: dict[str, Any]) -> None:
         if self.target_name != "wheel":
             return
+        if version == "editable":
+            # Editable installs (pip install -e) don't need the bundled binary;
+            # skip the Swift build so dev installs work without a toolchain.
+            return
         if shutil.which("swift") is None:
             # No Swift toolchain (e.g. building the sdist on a non-macOS host):
             # produce a pure wheel; OCR then relies on LCR_OCR_BIN or PATH.
