@@ -30,8 +30,7 @@ First release.
 ### Notes
 
 - macOS only; OCR uses the Apple Vision framework.
-- The `lcr-ocr` binary is built from the bundled Swift package and located via
-  `LCR_OCR_BIN`, `PATH`, or the in-repo build. Pages that need OCR require it;
-  text extraction, classification, and token estimation work without it.
+- The macOS wheel is a `universal2` platform wheel that bundles the `lcr-ocr`
+  binary, so OCR works out of the box. `LCR_OCR_BIN` overrides the bundled copy.
 
 [0.1.0]: https://github.com/sid732/LocalContextRouter/releases/tag/v0.1.0
