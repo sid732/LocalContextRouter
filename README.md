@@ -16,6 +16,8 @@ your application still makes the call.
 
 ## How it decides
 
+![How each page is routed: a document page branches to Text and OCR, which stay on your Mac, or Vision, which is sent to the model](docs/routing.png)
+
 For each page:
 
 - A usable text layer that is mostly prose: use the extracted text.
