@@ -1,5 +1,7 @@
 # LocalContextRouter
 
+![When your Mac can already read an image, why send it to an LLM?](docs/hero.png)
+
 Decide locally how each page of a document should reach a multimodal model:
 as extracted text, on-device OCR, or a rendered image. That keeps you from
 paying for vision tokens on pages that are only text.
@@ -45,6 +47,8 @@ localctx invoice.pdf
 localctx invoice.pdf --json
 localctx scan.png
 ```
+
+![Terminal output of localctx report.pdf: page 1 text, page 2 vision, page 3 ocr, with tokens saved](docs/see-it-run.png)
 
 `localctx invoice.pdf` prints each page, the source chosen for it, and the
 tokens saved:
