@@ -1,5 +1,7 @@
 # LocalContextRouter
 
+[![PyPI](https://img.shields.io/pypi/v/localcontextrouter)](https://pypi.org/project/localcontextrouter/)
+
 ![When your Mac can already read an image, why send it to an LLM?](docs/hero.png)
 
 Decide locally how each page of a document should reach a multimodal model:
